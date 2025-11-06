@@ -1,0 +1,6 @@
+# Gitignore file repo for the 2025 SOMETALP MetaG Project
+
+# Ignored files
+
+# ignored directories
+logs/
