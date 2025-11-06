@@ -1,2 +1,28 @@
 # SNAKEMAKE FILE FOR SOMETALP METAGENOMIC PROJECT
 # Last Updated: 2024-06-15
+
+##################################################
+# CONFIGURATION
+##################################################
+configfile: "../config/config.yaml"
+
+##################################################
+# RULE ALL
+##################################################
+
+
+
+##################################################
+# RULES
+##################################################
+#include: "rules/01_quality_control.smk"
+#include: "rules/02_assembly.smk"
+#include: "rules/03_binning.smk"
+#include: "rules/04_annotation.smk"
+#include: "rules/05_reporting.smk"
+#include: "rules/06_cleanup.smk"
+# Add additional rules as needed
+
+##################################################
+# END OF SNAKEMAKE FILE
+##################################################
