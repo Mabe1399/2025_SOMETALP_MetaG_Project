@@ -1,10 +1,27 @@
 # SNAKEMAKE FILE FOR SOMETALP METAGENOMIC PROJECT
-# Last Updated: 2025-11-06
+# Last Updated: 2025-11-07
+# Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
+
+##################################################
+# DESCRIPTION
+##################################################
+# Main Pipeline file to Launch the SOMETALP Metagenomic project
+# The file is modifiable per module if some steps need to be added or removed
+# Steps  incuded:
+# 01: Concatenation and preprocessing
+# 02: Metagenome Assembly
+# 03: Binning
+# 04: Annotation
+# 05: Reporting
 
 ##################################################
 # CONFIGURATION
 ##################################################
 configfile: "../config/config.yaml"
+
+# If `working_dir` is set in the config file, tell Snakemake to use it.
+# Use a safe default (the current working directory) when the key is missing.
+workdir: config.get("working_dir", ".")
 
 ##################################################
 # RULE ALL
@@ -20,7 +37,7 @@ configfile: "../config/config.yaml"
 #include: "rules/03_binning.smk"
 #include: "rules/04_annotation.smk"
 #include: "rules/05_reporting.smk"
-#include: "rules/06_cleanup.smk"
+
 # Add additional rules as needed
 
 ##################################################

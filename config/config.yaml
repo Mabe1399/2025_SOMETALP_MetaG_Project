@@ -1,2 +1,25 @@
 # CONFIGURATION FILE FOR SOMETALP METAGENOMIC PROJECT
-# Last Updated: 2025-11-06
+# Last Updated: 2025-11-07
+
+# Optional: working directory for Snakemake runs. This can be absolute or
+# relative to the location of the `Snakefile`. If not set, the current
+# directory used to invoke Snakemake will be kept.
+# Examples:
+#   working_dir: /work/username/Projects/2025_SOMETALP_MetaG_Project
+#   working_dir: ..
+working_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project
+
+# Path to the directory where raw metagenomic data (FASTQ files) are stored.
+# This can be absolute or relative to the location of the `Snakefile`.
+# Example:
+#   raw_data: 00_Data/01_Raw_Metagenomes
+raw_data: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/01_Raw_Data
+
+# path to a tab-separated samples table. The file should contain at
+# least one column: sample_name<TAB>...
+# Example:
+#   SAMP01	....
+#   SAMP02	....
+samples: 00_Data/00_Metadata/samples.tsv
+
+
