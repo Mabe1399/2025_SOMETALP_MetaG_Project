@@ -1,25 +1,38 @@
 # CONFIGURATION FILE FOR SOMETALP METAGENOMIC PROJECT
-# Last Updated: 2025-11-07
+# Last Updated: 2025-11-10
+# Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
 
-# Optional: working directory for Snakemake runs. This can be absolute or
-# relative to the location of the `Snakefile`. If not set, the current
-# directory used to invoke Snakemake will be kept.
+######################################################
+# DESCRIPTION
+######################################################
+# This configuration file contains paths and parameters for the SOMETALP
+# metagenomic analysis pipeline. Adjust the paths below to match your
+# project structure and computational environment.
+######################################################
+# WORKING DIRECTORIES
+######################################################
+# directory where all the analysis will be performed.
 # Examples:
-#   working_dir: /work/username/Projects/2025_SOMETALP_MetaG_Project
-#   working_dir: ..
+#   working_dir: /home/username/projects/2025_SOMETALP_MetaG_Project
+
 working_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project
 
-# Path to the directory where raw metagenomic data (FASTQ files) are stored.
-# This can be absolute or relative to the location of the `Snakefile`.
-# Example:
-#   raw_data: 00_Data/01_Raw_Metagenomes
-raw_data: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/01_Raw_Data
+# path to a scratch directory for temporary files.
+# Examples:
+#   scratch_dir: /tmp/username
 
-# path to a tab-separated samples table. The file should contain at
-# least one column: sample_name<TAB>...
-# Example:
-#   SAMP01	....
-#   SAMP02	....
-samples: 00_Data/00_Metadata/samples.tsv
+scratch_dir: /scratch/mbeckerb
+
+# path to the raw data directory containing input FASTQ files.
+
+input_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/01_Raw_Data
+
+# path to the log directory for storing log files.
+
+log_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/logs
+
+#########################################################
+# REFERENCE DATABASES
+#########################################################
 
 

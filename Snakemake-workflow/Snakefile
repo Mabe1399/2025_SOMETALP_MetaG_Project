@@ -1,5 +1,5 @@
 # SNAKEMAKE FILE FOR SOMETALP METAGENOMIC PROJECT
-# Last Updated: 2025-11-07
+# Last Updated: 2025-11-10
 # Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
 
 ##################################################
@@ -19,20 +19,47 @@
 ##################################################
 configfile: "../config/config.yaml"
 
-# If `working_dir` is set in the config file, tell Snakemake to use it.
-# Use a safe default (the current working directory) when the key is missing.
-workdir: config.get("working_dir", ".")
+##################################################
+# SET UP VARIABLES
+##################################################
+
+## Directory Variables
+# Raw Data directory variable
+DATA_DIR = config["input_dir"]
+
+# Scratch directory variable
+SCRATCH_DIR = config["scratch_dir"]
+
+# Output (Working) directory variable
+OUTPUT_DIR = config["working_dir"]
+
+# Log directory variable
+LOG_DIR = config["log_dir"]
+
+## Other Variables
+# Add other variables as needed
+include: "rules/00_common.smk"
+SAMPLES = detect_samples(DATA_DIR) # Function to detect samples from the data directory
+print(f"Detected samples: {SAMPLES}")
 
 ##################################################
 # RULE ALL
 ##################################################
 
-
-
+rule all:
+    input:
+        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", sample=SAMPLES, read=["1", "2"]),
+        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.zip", sample=SAMPLES, read=["1", "2"])
+    
+        #expand(f"{SCRATCH_DIR}/Concatenated/{{sample}}_R1_concat.fastq.gz", sample=SAMPLES),
+        #expand(f"{SCRATCH_DIR}/Concatenated/{{sample}}_R2_concat.fastq.gz", sample=SAMPLES)
+        # Add other final output files as needed
+   
 ##################################################
 # RULES
 ##################################################
-#include: "rules/01_quality_control.smk"
+#include: "rules/00_common.smk"
+include: "rules/01_quality_control_preprocessing.smk"
 #include: "rules/02_assembly.smk"
 #include: "rules/03_binning.smk"
 #include: "rules/04_annotation.smk"
