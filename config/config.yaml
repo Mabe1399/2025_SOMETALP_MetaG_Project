@@ -31,6 +31,9 @@ input_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Pr
 
 log_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/logs
 
+# path to the benchmark directory for storing benchmark files.
+benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
+
 #########################################################
 # REFERENCE DATABASES
 #########################################################

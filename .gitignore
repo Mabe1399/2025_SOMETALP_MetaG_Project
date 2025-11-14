@@ -1,6 +1,9 @@
 # Gitignore file repo for the 2025 SOMETALP MetaG Project
 
 # Ignored files
+Snakemake-workflow/slurm
 
 # ignored directories
 logs/
+Snakemake-workflow/.snakemake/
+benchmark/

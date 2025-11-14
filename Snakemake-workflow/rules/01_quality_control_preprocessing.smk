@@ -34,25 +34,65 @@ rule concat_lanes:
     threads: 2
     log:
         f"{LOG_DIR}/01_QC_Preprocessing/lane_concatenation/{{sample}}_concat.log"
+    benchmark:
+        f"{BENCH_DIR}/01_QC_Preprocessing/lane_concatenation/{{sample}}_concat.tsv"
     resources:
-        runtime_s = 600
+        runtime = 5
     shell:
-        "(cat {input.R1s} > {output.R1}; cat {input.R2s} > {output.R2}) 2> {log}"
+        "cat {input.R1s} > {output.R1}; cat {input.R2s} > {output.R2} 2> {log}"
 
-################# BEFORE QC #######################
+################# 02 BEFORE QC #######################
 
 rule before_fastqc:
     input:
-        expand(f"{SCRATCH_DIR}/Concatenated/{{sample}}_R{{read}}_concat.fastq.gz", sample=SAMPLES, read=["1", "2"])
+        lambda wildcards: [
+            f"{SCRATCH_DIR}/Concatenated/{wildcards.sample}_R1_concat.fastq.gz",
+            f"{SCRATCH_DIR}/Concatenated/{wildcards.sample}_R2_concat.fastq.gz"
+        ],
     output:
-        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", sample=SAMPLES, read=["1","2"]),
-        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.zip", sample=SAMPLES, read=["1","2"])
-    threads: 4
+        html1=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R1_concat_fastqc.html",
+        html2=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R2_concat_fastqc.html",
+        zip1=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R1_concat_fastqc.zip",
+        zip2=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R2_concat_fastqc.zip"
+    conda:
+        "../envs/QC_env.yaml"
+    threads: 2
     log:
-        f"{LOG_DIR}/01_QC_Preprocessing/Before_QC.log"
+        f"{LOG_DIR}/01_QC_Preprocessing/Before_QC/{{sample}}_QC.log"
+    benchmark:
+        f"{BENCH_DIR}/01_QC_Preprocessing/Before_QC/{{sample}}_QC.tsv"
     resources:
         mem_mb = 6000,
-        runtime= 3600
+        runtime = 180,
+        cpus_per_task = 2
     shell:
-        "mkdir -p {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before; "
+        "mkdir -p {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before ;"
         "fastqc -t {threads} -o {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before {input};"
+  
+
+rule before_multiqc:
+    input:
+        expand(
+            f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", 
+            sample=SAMPLES, 
+            read=[1,2]
+            )
+    output:
+        outdir = directory(f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_Before")
+    conda:
+        "../envs/QC_env.yaml"
+    threads: 1
+    log: 
+        f"{LOG_DIR}/01_QC_Preprocessing/Before_QC/Multi_QC.log"
+    benchmark:
+        f"{BENCH_DIR}/01_QC_Preprocessing/Before_QC/Multi_QC.tsv"
+    resources:
+        mem_mb = 8000,
+        runtime = 60,
+        cpus_per_task = 1
+    shell:
+        "mkdir -p {OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_Before ;"
+        "multiqc -o {output.outdir} {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before"
+
+############### 03 TRIMMING #############################
+

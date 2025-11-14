@@ -36,6 +36,9 @@ OUTPUT_DIR = config["working_dir"]
 # Log directory variable
 LOG_DIR = config["log_dir"]
 
+# Benchmark directory variable
+BENCH_DIR = config["benchmark_dir"]
+
 ## Other Variables
 # Add other variables as needed
 include: "rules/00_common.smk"
@@ -48,8 +51,9 @@ print(f"Detected samples: {SAMPLES}")
 
 rule all:
     input:
-        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", sample=SAMPLES, read=["1", "2"]),
-        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.zip", sample=SAMPLES, read=["1", "2"])
+        f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_Before"
+        #expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", sample=SAMPLES, read=["1", "2"]),
+        #expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.zip", sample=SAMPLES, read=["1", "2"])
     
         #expand(f"{SCRATCH_DIR}/Concatenated/{{sample}}_R1_concat.fastq.gz", sample=SAMPLES),
         #expand(f"{SCRATCH_DIR}/Concatenated/{{sample}}_R2_concat.fastq.gz", sample=SAMPLES)
@@ -58,7 +62,7 @@ rule all:
 ##################################################
 # RULES
 ##################################################
-#include: "rules/00_common.smk"
+include: "rules/00_common.smk"
 include: "rules/01_quality_control_preprocessing.smk"
 #include: "rules/02_assembly.smk"
 #include: "rules/03_binning.smk"
