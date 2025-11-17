@@ -51,7 +51,7 @@ print(f"Detected samples: {SAMPLES}")
 
 rule all:
     input:
-        f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_Before"
+        f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_After"
         #expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", sample=SAMPLES, read=["1", "2"]),
         #expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.zip", sample=SAMPLES, read=["1", "2"])
     

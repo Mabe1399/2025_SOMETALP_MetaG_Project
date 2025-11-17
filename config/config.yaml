@@ -38,4 +38,6 @@ benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
 # REFERENCE DATABASES
 #########################################################
 
+# path to the Trimmomatic adapter file.
+trimmomatic_adapters: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/trimmomatic/adapters/NexteraPE-PE.fa
 
