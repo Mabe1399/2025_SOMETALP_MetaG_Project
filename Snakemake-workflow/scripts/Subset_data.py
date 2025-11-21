@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-# Author: Matias Becker Burgos (Matias.B)
+# Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
 # Script to subset metagenomic data based on number of reads or total base pairs
 # Usage: python Subset_data.py -i input.fastq.gz -o output.fastq.gz -n 1000000
-# 
+
 
 # Imports
 import gzip

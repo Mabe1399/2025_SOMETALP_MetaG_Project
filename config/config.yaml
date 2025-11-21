@@ -1,5 +1,5 @@
 # CONFIGURATION FILE FOR SOMETALP METAGENOMIC PROJECT
-# Last Updated: 2025-11-10
+# Last Updated: 2025-11-21
 # Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
 
 ######################################################
@@ -35,9 +35,78 @@ log_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/logs
 benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
 
 #########################################################
-# REFERENCE DATABASES
+# SOFTWARE PARAMETERS
 #########################################################
+# General parameters for all tools
 
-# path to the Trimmomatic adapter file.
-trimmomatic_adapters: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/trimmomatic/adapters/NexteraPE-PE.fa
+# Concatenate parameters
+Concatenate:
+  threads: 2
+  runtime_min: 5
+
+# FastQC parameters
+fastqc:
+  threads: 2
+  memory_mb: 1000
+  runtime_min: 35
+
+# MultiQC parameters
+multiqc:
+  threads: 1
+  memory_mb: 600
+  runtime_min: 10
+
+# Trimmomatic parameters
+trimmomatic:
+  trimmomatic_adapters: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/trimmomatic/adapters/NexteraPE-PE.fa
+  leading: 28
+  trailing: 28
+  minlen: 60
+  # Ressources allocation
+  threads: 8
+  memory_mb: 6000
+  runtime_min: 300
+
+# Kraken2 parameters
+# Database parameters
+kraken2_db:
+  threads: 42
+  memory_mb: 500000
+  runtime_min: 720
+  disk_mb: 1000000
+# Formatted Reference genomes for host filtering in Kraken2
+  refseq:
+  - /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Apodemus_sylvaticus/GCF_947179515.1_mApoSyl1.1_genomic_kraken.fna # Apodemus_sylvaticus
+  - /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Chionomys_nivalis/GCF_950005125.1_mChiNiv1.1_genomic_kraken.fna # Chionomys_nivalis
+  - /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Arvicola_amphibius/GCF_903992535.2_mArvAmp1.2_genomic_kraken.fna # Arvicola_amphibius
+  - /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Microtus_arvalis/GCA_044665705.1_MicArv1.0_genomic_kraken.fna # Microtus_arvalis
+  - /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Myodes_glareolus/GCF_902806735.1_Bank_vole1_10x_genomic_kraken.fna # Myodes_glareolus
+  - /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Sorex_araneus/GCF_027595985.1_mSorAra2.pri_genomic_kraken.fna # Sorex_araneus
+    
+
+# Run parameters
+kraken2_run:
+  threads: 8
+  memory_mb: 100000
+  runtime_min: 60
+
+host_filtering:
+  #bbsplit parameters
+  Host_refs:
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Apodemus_sylvaticus/GCF_947179515.1_mApoSyl1.1_genomic.fna" # Apodemus_sylvaticus
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Chionomys_nivalis/GCA_044665705.1_MicArv1.0_genomic.fna" # Chionomys_nivalis
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Arvicola_amphibius/GCF_903992535.2_mArvAmp1.2_genomic.fna" # Arvicola_amphibius
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Microtus_arvalis/GCA_044665705.1_MicArv1.0_genomic.fna" # Microtus_arvalis
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Myodes_glareolus/GCF_902806735.1_Bank_vole1_10x_genomic.fna" # Myodes_glareolus
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Sorex_araneus/GCF_027595985.1_mSorAra2.pri_genomic.fna" # Sorex_araneus
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Homo_sapiens/GCF_000001405.40_GRCh38.p14_genomic.fna" # Homo_sapiens
+  java_mem_u: 50g
+  # Ressources allocation
+  threads: 25
+  memory_mb: 100000
+  runtime_min: 600
+
+
+# MEGAHIT parameters
+
 

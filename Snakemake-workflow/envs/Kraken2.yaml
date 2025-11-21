@@ -1,0 +1,9 @@
+name: Kraken2_env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - kraken2
+  - bracken
+  - blast
