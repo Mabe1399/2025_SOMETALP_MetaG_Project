@@ -1,7 +1,0 @@
-GCF_947179515.1_mApoSyl1.1_genomic
-GCF_950005125.1_mChiNiv1.1_genomic
-GCF_903992535.2_mArvAmp1.2_genomic
-GCA_044665705.1_MicArv1.0_genomic
-GCF_902806735.1_Bank_vole1_10x_genomic
-GCF_027595985.1_mSorAra2.pri_genomic
-GCF_000001405.40_GRCh38.p14_genomic
