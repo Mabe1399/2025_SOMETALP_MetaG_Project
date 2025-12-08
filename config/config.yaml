@@ -70,9 +70,9 @@ trimmomatic:
 # Kraken2 parameters
 # Database parameters
 kraken2_db:
-  threads: 42
+  threads: 32
   memory_mb: 500000
-  runtime_min: 720
+  runtime_min: 2880
   disk_mb: 1000000
 # Formatted Reference genomes for host filtering in Kraken2
   refseq:
@@ -86,15 +86,15 @@ kraken2_db:
 
 # Run parameters
 kraken2_run:
-  threads: 8
-  memory_mb: 100000
-  runtime_min: 60
+  threads: 4
+  memory_mb: 200000
+  runtime_min: 180
 
 host_filtering:
   #bbsplit parameters
   Host_refs:
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Apodemus_sylvaticus/GCF_947179515.1_mApoSyl1.1_genomic.fna" # Apodemus_sylvaticus
-  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Chionomys_nivalis/GCA_044665705.1_MicArv1.0_genomic.fna" # Chionomys_nivalis
+  - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Chionomys_nivalis/GCF_950005125.1_mChiNiv1.1_genomic.fna" # Chionomys_nivalis
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Arvicola_amphibius/GCF_903992535.2_mArvAmp1.2_genomic.fna" # Arvicola_amphibius
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Microtus_arvalis/GCA_044665705.1_MicArv1.0_genomic.fna" # Microtus_arvalis
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Myodes_glareolus/GCF_902806735.1_Bank_vole1_10x_genomic.fna" # Myodes_glareolus

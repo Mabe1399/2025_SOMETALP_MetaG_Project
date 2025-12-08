@@ -1,0 +1,7 @@
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Apodemus_sylvaticus/GCF_947179515.1_mApoSyl1.1_genomic.fna
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Chionomys_nivalis/GCF_950005125.1_mChiNiv1.1_genomic.fna
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Arvicola_amphibius/GCF_903992535.2_mArvAmp1.2_genomic.fna
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Microtus_arvalis/GCA_044665705.1_MicArv1.0_genomic.fna
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Myodes_glareolus/GCF_902806735.1_Bank_vole1_10x_genomic.fna
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Sorex_araneus/GCF_027595985.1_mSorAra2.pri_genomic.fna
+/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Homo_sapiens/GCF_000001405.40_GRCh38.p14_genomic.fna

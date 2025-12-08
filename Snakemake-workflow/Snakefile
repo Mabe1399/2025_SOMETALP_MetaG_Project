@@ -51,7 +51,7 @@ print(f"Detected samples: {SAMPLES}")
 
 rule all:
     input:
-        #f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/HF/HF_refstats.tsv"
+        #f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/HF/HF_refstats.tsv",
         f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/Kraken2/Combined_kraken2_report.tsv"
         #f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_After" # After_mutliQC results directory
         #expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before/{{sample}}_R{{read}}_concat_fastqc.html", sample=SAMPLES, read=["1", "2"]),

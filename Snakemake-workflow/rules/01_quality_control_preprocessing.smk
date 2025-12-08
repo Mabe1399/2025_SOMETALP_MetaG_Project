@@ -14,7 +14,7 @@
 # 02: Before QC (FastQC + MultiQC)
 # 03: Trimming (Trimmomatic)
 # 04: After QC (FastQC + MultiQC)
-# 05: Before Taxonomic profiling (Kraken2)
+# 05: Taxonomic profiling (Kraken2)
 # 06: Host filtering (BWA)
 # 07: Preprocessing Summary
 
@@ -179,11 +179,11 @@ rule After_multiqc:
         "mkdir -p {OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_After ;"
         "(multiqc -o {output.outdir} {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After) 2> {log}"
 
-###################### 05 BEFORE TAX PROFILING ######################################
+###################### 05 TAX PROFILING ######################################
 
 rule build_Kraken2_db:
     output:
-        directory("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/kraken2_db")
+        db = directory("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/kraken2_db")
     params:
         host_list=lambda wildcards: " ".join(config["kraken2_db"]["refseq"])
     threads: config["kraken2_db"]["threads"]
@@ -200,13 +200,22 @@ rule build_Kraken2_db:
         f"{BENCH_DIR}/01_QC_Preprocessing/Kraken2/kraken2_db.tsv"
     shell:
         """
-        kraken2-build --download-taxonomy --db {output}
-        kraken2-build --download-library bacteria --db {output}
-        kraken2-build --download-library human --db {output}
-        for f in {params.host_list}; do
-            kraken2-build --add-to-library $f --db {output} 
+        # Create the db folder
+        mkdir -p $TMPDIR/kraken2_db
+        # Build the database
+        kraken2-build --download-taxonomy --db $TMPDIR/krakeb2_db
+        kraken2-build --download-library bacteria --db $TMPDIR/kraken2_db
+        kraken2-build --download-library human --db $TMPDIR/kraken2_db
+        echo "Adding files: ${params.host_list}" >> {log}
+        for f in ${params.host_list}; do
+            echo "File: $f" >> {log}
+            kraken2-build --add-to-library "$f" --db $TMPDIR/kraken2_db
         done
-        kraken2-build --build --db {output}
+        kraken2-build --build --threads {threads} --db $TMPDIR/kraken2_db
+
+        # Copy the database back to the shared folder
+        mkdir -p {output.db}
+        cp -r $TMPDIR/kraken2_db/* {output.db}/ 
         """
 
 
@@ -232,9 +241,10 @@ rule run_kraken2:
     shell:
         "(kraken2 --use-names --threads {threads} \
         --db {input.db} \
-        --fastq-input --report {output.rep} --gzip-compressed \
+        --report {output.rep} --gzip-compressed \
+        --report-zero-counts \
         --paired {input.R1} {input.R2} \
-        > {output.tab}) 2> {log}"
+        --output {output.tab}) 2> {log}"
 
 
 rule parse_kraken2_report:
@@ -243,13 +253,15 @@ rule parse_kraken2_report:
     output:
         f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/Kraken2/Combined_kraken2_report.tsv"
     localrule: True
+    conda:
+        "../envs/Parsing.yaml"
     threads: 1
     log:
         f"{LOG_DIR}/01_QC_Preprocessing/Kraken2/Combined_kraken2_parsing.log"
     benchmark:
         f"{BENCH_DIR}/01_QC_Preprocessing/Kraken2/Combined_kraken2_parsing.log"
     shell:
-        "python scripts/Combine_kraken_reports.py -o {output} {input}"
+        "(python scripts/Combine_kraken_reports.py -o {output} -i {input}) 2> {log}"
 
 
 ########################## 06 HOST FILTERING ########################################
@@ -277,7 +289,7 @@ rule host_filtering:
         runtime = config["host_filtering"]["runtime_min"],
         cpus_per_task = config["host_filtering"]["threads"]
     shell:
-        "bbsplit.ch in1={input.R1} in2={input.R2} \
+        "bbsplit.sh in1={input.R1} in2={input.R2} \
         ref={params.refs_list} \
         basename= $TMPDIR/{wildcards.sample}_HF_discarded_%.sam \
         refstats={output.refstats} rebuild=t \
