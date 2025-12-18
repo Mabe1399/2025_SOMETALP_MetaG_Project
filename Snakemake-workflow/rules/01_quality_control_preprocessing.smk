@@ -1,5 +1,5 @@
 # QUALITY CONTROL AND PREPROCESSING SNAKEFILE
-# Last Updated: 2025-11-18
+# Last Updated: 2025-12-18
 # Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
 
 #######################################################
@@ -15,7 +15,7 @@
 # 03: Trimming (Trimmomatic)
 # 04: After QC (FastQC + MultiQC)
 # 05: Taxonomic profiling (Kraken2)
-# 06: Host filtering (BWA)
+# 06: Host filtering (Bowtie2)
 # 07: Preprocessing Summary
 
 ##################################################
@@ -66,9 +66,10 @@ rule before_fastqc:
         runtime = config["fastqc"]["runtime_min"],
         cpus_per_task = config["fastqc"]["threads"]
     shell:
-        "mkdir -p {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before ;"
-        "fastqc -t {threads} -o {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before {input};"
-
+        """
+        mkdir -p {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before
+        fastqc -t {threads} -o {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before {input}
+        """
 rule before_multiqc:
     input:
         expand(
@@ -90,8 +91,10 @@ rule before_multiqc:
         runtime = config["multiqc"]["runtime_min"],
         cpus_per_task = config["multiqc"]["threads"]
     shell:
-        "mkdir -p {OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_Before ;"
-        "multiqc -o {output.outdir} {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before"
+        """
+        mkdir -p {OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_Before
+        multiqc -o {output.outdir} {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_Before
+        """
 
 ############### 03 TRIMMING #############################
 
@@ -138,7 +141,7 @@ rule After_fastqc:
         html1=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After/{{sample}}_R1_paired_fastqc.html",
         html2=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After/{{sample}}_R2_paired_fastqc.html",
         zip1=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After/{{sample}}_R1_paired_fastqc.zip",
-        zip2=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After/{{sample}}_R2_paired_fastqc.zip"
+        zip2=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After/{{sample}}_R2_paired_fastqc.zip",
     conda:
         "../envs/QC_env.yaml"
     threads: config["fastqc"]["threads"]
@@ -151,9 +154,11 @@ rule After_fastqc:
         runtime = config["fastqc"]["runtime_min"],
         cpus_per_task = config["fastqc"]["threads"]
     shell:
-        "mkdir -p {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After ;"
-        "(fastqc -t {threads} -o {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After {input}) 2> {log};"
-  
+        """
+        mkdir -p {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After
+        (fastqc -t {threads} -o {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After {input}) 2> {log}
+        """
+
 
 rule After_multiqc:
     input:
@@ -176,8 +181,10 @@ rule After_multiqc:
         runtime = config["multiqc"]["runtime_min"],
         cpus_per_task = config["multiqc"]["threads"]
     shell:
-        "mkdir -p {OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_After ;"
-        "(multiqc -o {output.outdir} {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After) 2> {log}"
+        """
+        mkdir -p {OUTPUT_DIR}/02_Results/01_QC_Preprocessing/QC_After
+        (multiqc -o {output.outdir} {OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/QC_After) 2> {log}
+        """
 
 ###################### 05 TAX PROFILING ######################################
 
@@ -266,64 +273,37 @@ rule parse_kraken2_report:
 
 ########################## 06 HOST FILTERING ########################################
 
-rule host_filtering:
-    input: 
-        R1=f"{SCRATCH_DIR}/Trimmed/{{sample}}_R1_paired.fastq.gz",
-        R2=f"{SCRATCH_DIR}/Trimmed/{{sample}}_R2_paired.fastq.gz"
+rule host_indexing:
     output:
-        unmapped_R1=f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R1_HF.fastq.gz",
-        unmapped_R2=f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R2_HF.fastq.gz",
-        refstats=f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/HF/{{sample}}_refstats.out"
+        expand("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/hosts_index.{ext}", ext=["1.bt2","2.bt2","3.bt2","4.bt2","rev.1.bt2","rev.2.bt2"])
     conda:
-        "../envs/bwa_mapping.yaml"
-    threads: config["host_filtering"]["threads"]
+        "../envs/bowtie2_mapping.yaml"
+    threads: config["host_indexing"]["threads"]
     params:
-        refs_list=lambda wildcardse: ",".join(config["host_filtering"]["Host_refs"]),
-        xmx= config["host_filtering"]["java_mem_u"]
+        refs_seq=lambda wildcardse: " ".join(config["host_indexing"]["Host_refs"])
     log:
-        f"{LOG_DIR}/01_QC_Preprocessing/HF/{{sample}}_host_filtering.log"
+        f"{LOG_DIR}/01_QC_Preprocessing/HF/host_indexing.log"
     benchmark:
-        f"{BENCH_DIR}/01_QC_Preprocessing/HF/{{sample}}_host_filtering.log"
+        f"{BENCH_DIR}/01_QC_Preprocessing/HF/host_indexing.tsv"
     resources:
-        mem_mb = config["host_filtering"]["memory_mb"],
-        runtime = config["host_filtering"]["runtime_min"],
-        cpus_per_task = config["host_filtering"]["threads"]
+        mem_mb = config["host_indexing"]["memory_mb"],
+        runtime = config["host_indexing"]["runtime_min"],
+        cpus_per_task = config["host_indexing"]["threads"]
     shell:
-        "bbsplit.sh in1={input.R1} in2={input.R2} \
-        ref={params.refs_list} \
-        basename= $TMPDIR/{wildcards.sample}_HF_discarded_%.sam \
-        refstats={output.refstats} rebuild=t \
-        outu1={output.unmapped_R1} outu2={output.unmapped_R2} nzo=f -Xmx{params.xmx} threads={threads}"
+        """
+        # Concatenate the Host genomes
+        cat {params.refs_seq} > $TMPDIR/hosts_combined.fa
 
-rule parse_HF_refstats:
-    input:
-        expand(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/HF/{{sample}}_refstats.out", sample=SAMPLES)
-    output:
-        f"{OUTPUT_DIR}/02_Results/01_QC_Preprocessing/HF/HF_refstats.tsv"
-    localrule: True
-    threads: 1
-    log:
-        f"{LOG_DIR}/01_QC_Preprocessing/HF/HF_refstats_parse.log"
-    benchmark:
-        f"{BENCH_DIR}/01_QC_Preprocessing/HF/HF_refstats_parse.log"       
-    run:
-        import pandas as pd
-        import os
+        # Build the index
+        mkdir -p $TMPDIR/hosts_index
+        bowtie2-build $TMPDIR/hosts_combined.fa $TMPDIR/hosts_index
 
-        dfs = []
-        for f in input:
-            # Extract sample name
-            sample = os.path.basename(f).replace("_refstats.out", "")
-            # load file in panda
-            df = pd.read_csv(f, sep="\t", comment="#")
-            # Insert a new sample column
-            df.insert(0, "sample", sample)
-            # Append to preexisitng files
-            dfs.append(df)
-        
-        # Small reformating + save as tsv file
-        combined_df = pd.concat(dfs, ignore_index=True)
-        combined_df.to_csv(output[0], sep="\t", index=False)
+        # Copy the index in permanent storage
+        mkdir -p /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index
+        cp -r $TMPDIR/hosts_index/* /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/
+        """
+
+
 
 ############################ 07 PREPROCESSING SUMMARY ##############################
 

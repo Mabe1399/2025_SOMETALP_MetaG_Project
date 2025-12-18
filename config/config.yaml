@@ -1,5 +1,5 @@
 # CONFIGURATION FILE FOR SOMETALP METAGENOMIC PROJECT
-# Last Updated: 2025-11-21
+# Last Updated: 2025-12-18
 # Author: Matias Becker Burgos (Matias.BeckerBurgos@unil.ch)
 
 ######################################################
@@ -90,8 +90,14 @@ kraken2_run:
   memory_mb: 200000
   runtime_min: 180
 
-host_filtering:
-  #bbsplit parameters
+
+# Bowtie2 parameters for host filtering 
+# Index building parameters
+host_indexing:
+  threads: 16
+  memory_mb: 50000
+  runtime_min: 120
+  # Reference genomes for host filtering in Bowtie2
   Host_refs:
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Apodemus_sylvaticus/GCF_947179515.1_mApoSyl1.1_genomic.fna" # Apodemus_sylvaticus
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Chionomys_nivalis/GCF_950005125.1_mChiNiv1.1_genomic.fna" # Chionomys_nivalis
@@ -100,7 +106,9 @@ host_filtering:
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Myodes_glareolus/GCF_902806735.1_Bank_vole1_10x_genomic.fna" # Myodes_glareolus
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Sorex_araneus/GCF_027595985.1_mSorAra2.pri_genomic.fna" # Sorex_araneus
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Homo_sapiens/GCF_000001405.40_GRCh38.p14_genomic.fna" # Homo_sapiens
-  java_mem_u: 50g
+
+# Host filtering parameters
+host_filtering:
   # Ressources allocation
   threads: 25
   memory_mb: 100000
