@@ -275,12 +275,12 @@ rule parse_kraken2_report:
 
 rule host_indexing:
     output:
-        expand("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/hosts_index.{ext}", ext=["1.bt2","2.bt2","3.bt2","4.bt2","rev.1.bt2","rev.2.bt2"])
+        expand("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/SOMETALP_index.{ext}", ext=["1.bt2l","2.bt2l","3.bt2l","4.bt2l","rev.1.bt2l","rev.2.bt2l"])
     conda:
         "../envs/bowtie2_mapping.yaml"
     threads: config["host_indexing"]["threads"]
     params:
-        refs_seq=lambda wildcardse: " ".join(config["host_indexing"]["Host_refs"])
+        refs_seq=lambda wildcards: " ".join(config["host_indexing"]["Host_refs"])
     log:
         f"{LOG_DIR}/01_QC_Preprocessing/HF/host_indexing.log"
     benchmark:
@@ -296,14 +296,45 @@ rule host_indexing:
 
         # Build the index
         mkdir -p $TMPDIR/hosts_index
-        bowtie2-build $TMPDIR/hosts_combined.fa $TMPDIR/hosts_index
+        (bowtie2-build --threads {threads} $TMPDIR/hosts_combined.fa $TMPDIR/hosts_index/SOMETALP_index) 2> {log}
 
         # Copy the index in permanent storage
         mkdir -p /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index
         cp -r $TMPDIR/hosts_index/* /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/
         """
 
-
+rule host_filtering:
+    input:
+        R1 = f"{SCRATCH_DIR}/Trimmed/{{sample}}_R1_paired.fastq.gz",
+        R2 = f"{SCRATCH_DIR}/Trimmed/{{sample}}_R2_paired.fastq.gz",
+        index = expand("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/SOMETALP_index.{ext}", ext=["1.bt2l","2.bt2l","3.bt2l","4.bt2l","rev.1.bt2l","rev.2.bt2l"])
+    output:
+        R1_clean = f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R1_cleaned.fastq.gz",
+        R2_clean = f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R2_cleaned.fastq.gz"
+    conda:
+        "../envs/bowtie2_mapping.yaml"
+    threads: config["host_filtering"]["threads"]
+    params:
+        sam = temp(f"{SCRATCH_DIR}/{{sample}}_host.sam"),
+        Host_filt = f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R%_cleaned.fastq.gz",
+        index = config["host_filtering"]["index_path"]
+    log:
+        f"{LOG_DIR}/01_QC_Preprocessing/HF/{{sample}}_host_filtering.log"
+    benchmark:
+        f"{BENCH_DIR}/01_QC_Preprocessing/HF/{{sample}}_host_filtering.tsv"
+    resources:
+        mem_mb = config["host_filtering"]["memory_mb"],
+        runtime = config["host_filtering"]["runtime_min"],
+        cpus_per_task = config["host_filtering"]["threads"]
+    shell:
+        """
+        bowtie2 --very-sensitive-local --threads {threads} \
+            --un-conc-gz {params.Host_filt} \
+            -x {params.index} \
+            -1 {input.R1} \
+            -2 {input.R2} \
+            -S {params.sam} 2> {log} \
+        """
 
 ############################ 07 PREPROCESSING SUMMARY ##############################
 

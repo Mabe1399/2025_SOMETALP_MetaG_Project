@@ -39,6 +39,8 @@ benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
 #########################################################
 # General parameters for all tools
 
+######## 01 Preprocessing parameters ########
+
 # Concatenate parameters
 Concatenate:
   threads: 2
@@ -94,9 +96,9 @@ kraken2_run:
 # Bowtie2 parameters for host filtering 
 # Index building parameters
 host_indexing:
-  threads: 16
-  memory_mb: 50000
-  runtime_min: 120
+  threads: 20
+  memory_mb: 100000
+  runtime_min: 240
   # Reference genomes for host filtering in Bowtie2
   Host_refs:
   - "/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/Host_Database/Apodemus_sylvaticus/GCF_947179515.1_mApoSyl1.1_genomic.fna" # Apodemus_sylvaticus
@@ -110,11 +112,23 @@ host_indexing:
 # Host filtering parameters
 host_filtering:
   # Ressources allocation
-  threads: 25
+  threads: 20
   memory_mb: 100000
   runtime_min: 600
+  # Index for host filtering
+  index_path: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/SOMETALP_index 
+
+########## 02 Assembly parameters ########
+
+# Metaspade parameters
+Metaspade_assembly:
+  threads: 40
+  memory_mb: 250000
+  runtime_min: 1440
 
 
-# MEGAHIT parameters
-
-
+# MetaQuast parameters
+MetaQuast:
+  threads: 4
+  memory_mb: 1000
+  runtime_min: 30
