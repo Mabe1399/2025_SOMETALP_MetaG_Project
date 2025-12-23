@@ -12,7 +12,6 @@
 # 01: Assembly (Metaspade)
 # 02: Contig QC (Metaquast)
 # 03: filter out low quality contig
-# 04: Assembly Summary
 
 ##################################################
 # RULES
@@ -25,12 +24,13 @@ rule Metaspade_assembly:
         R1 = f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R1_cleaned.fastq.gz",
         R2 = f"{OUTPUT_DIR}/00_Data/02_Clean_Data/{{sample}}_R2_cleaned.fastq.gz"
     output:
-        scaffolds = f"{OUTPUT_DIR}/02_Results/02_Assembly/Metaspade/{{sample}}_contigs.fasta"
+        contigs = f"{OUTPUT_DIR}/02_Results/02_Assembly/Metaspade/{{sample}}_contigs.fasta",
+        scaffolds = f"{OUTPUT_DIR}/02_Results/02_Assembly/Metaspade/{{sample}}_scaffolds.fasta"
     conda:
         "../envs/Assembly.yaml"
     params:
-        dir= directory("$TMPDIR/{sample}_metaspades/")
-    logs:
+        outdir= lambda wc: f"$TMPDIR/{wc.sample}_metaspades"
+    log:
         f"{LOG_DIR}/02_Assembly/Metaspade/{{sample}}_contigs.log"
     benchmark:
         f"{BENCH_DIR}/02_Assembly/Metaspade/{{sample}}_contigs.tsv"
@@ -41,14 +41,19 @@ rule Metaspade_assembly:
         cpus_per_task = config["Metaspade_assembly"]["threads"]
     shell:
         """
+        # Create the tmp dir
+        mkdir -p {params.outdir}
+
         spades.py --meta \
-            --pe-1 {input.R1} --pe1-2 {input.R2} \
-            -o {params.dir} \
+            --only-assembler \
+            --pe1-1 {input.R1} --pe1-2 {input.R2} \
+            -o {params.outdir} \
             -m $(({resources.mem_mb}/1024)) \
             -t {threads} 2> {log}
         
         # Move the file of interest to the right directory
-        mv {params.dir}/contig.fasta {output.scaffolds}
+        mv {params.outdir}/contigs.fasta {output.contigs}
+        mv {params.outdir}/scaffolds.fasta {output.scaffolds}
         """
 
 
@@ -61,7 +66,7 @@ rule Metaquast_QC:
         directory(f"{OUTPUT_DIR}/01_Analysis/02_Assembly/Metaquast_QC/{{sample}}")
     conda:
         "../envs/Assembly.yaml"
-    logs:
+    log:
         f"{LOG_DIR}/02_Assembly/MetaQuast/{{sample}}_QC.log"
     benchmark:
         f"{BENCH_DIR}/02_Assembly/MetaQuast/{{sample}}_QC.tsv"
@@ -103,3 +108,28 @@ rule Quast_multiqc:
         """
     
 ################ 03 FILTER CONTIG ############################
+
+rule Contig_filter:
+    input:
+        f"{OUTPUT_DIR}/02_Results/02_Assembly/Metaspade/{{sample}}_contigs.fasta"
+    params:
+        length_t = config["Contig_filter"]["length_threshold"],
+        cov_t = config["Contig_filter"]["coverage_threshold"]
+    output:
+        f"{OUTPUT_DIR}/02_Results/02_Assembly/Contig_Filtering/{{sample}}_min{config['Contig_filter']['length_threshold']}_contigs.fasta"
+    localrule: True
+    conda:
+        "../envs/Parsing.yaml"
+    threads: 1
+    log:
+        f"{LOG_DIR}/02_Assembly/Contig_F/{{sample}}_contigs_Filtering.log"
+    benchmark:
+        f"{BENCH_DIR}/02_Assembly/Contig_F/{{sample}}_contigs_Filtering.tsv"
+    shell:
+        """
+        python3 scripts/parse_spades_metagenome.py \
+            -i {input} \
+            -o {output} \
+            -l {params.length_t} \
+            -c {params.cov_t} 2> {log}
+        """

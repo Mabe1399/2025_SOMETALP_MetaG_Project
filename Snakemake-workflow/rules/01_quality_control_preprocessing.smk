@@ -16,7 +16,6 @@
 # 04: After QC (FastQC + MultiQC)
 # 05: Taxonomic profiling (Kraken2)
 # 06: Host filtering (Bowtie2)
-# 07: Preprocessing Summary
 
 ##################################################
 # RULES
@@ -268,7 +267,7 @@ rule parse_kraken2_report:
     benchmark:
         f"{BENCH_DIR}/01_QC_Preprocessing/Kraken2/Combined_kraken2_parsing.log"
     shell:
-        "(python scripts/Combine_kraken_reports.py -o {output} -i {input}) 2> {log}"
+        "(python3 scripts/Combine_kraken_reports.py -o {output} -i {input}) 2> {log}"
 
 
 ########################## 06 HOST FILTERING ########################################
@@ -335,7 +334,3 @@ rule host_filtering:
             -2 {input.R2} \
             -S {params.sam} 2> {log} \
         """
-
-############################ 07 PREPROCESSING SUMMARY ##############################
-
-

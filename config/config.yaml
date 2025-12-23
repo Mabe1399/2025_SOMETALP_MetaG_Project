@@ -25,7 +25,7 @@ scratch_dir: /scratch/mbeckerb
 
 # path to the raw data directory containing input FASTQ files.
 
-input_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/01_Raw_Data
+input_dir: /scratch/mbeckerb/01_Raw_Data
 
 # path to the log directory for storing log files.
 
@@ -122,13 +122,39 @@ host_filtering:
 
 # Metaspade parameters
 Metaspade_assembly:
-  threads: 40
+  threads: 20
   memory_mb: 250000
-  runtime_min: 1440
+  runtime_min: 2880
 
 
 # MetaQuast parameters
 MetaQuast:
   threads: 4
-  memory_mb: 1000
-  runtime_min: 30
+  memory_mb: 64000
+  runtime_min: 120
+
+
+# Contig filtering parameters
+Contig_filter:
+  length_threshold: 1000 # this is a default of 1kb
+  coverage_threshold: 1
+
+########### 03 Binning parameters #############
+
+# Bowtie2 parameters
+Contig_indexing:
+  threads: 20
+  memory_mb:
+  runtime_min:
+
+Contig_Backmapping:
+  threads:
+  memory_mb:
+  runtime_min:
+
+# Metabat2 parameters
+
+Depth_calc:
+  threads:
+  memory_mb:
+  runtime_min:
