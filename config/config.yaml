@@ -25,7 +25,7 @@ scratch_dir: /scratch/mbeckerb
 
 # path to the raw data directory containing input FASTQ files.
 
-input_dir: /scratch/mbeckerb/01_Raw_Data
+input_dir: /nas/FAC/FBM/DBC/fmazel/gut_evol_stg/D2c/SOMETALP/2022_VD_MetaG_Project/raw_data/2024_deep_seq/rodent_metagenomes_FM/raw_files
 
 # path to the log directory for storing log files.
 
@@ -97,7 +97,7 @@ kraken2_run:
 # Index building parameters
 host_indexing:
   threads: 20
-  memory_mb: 100000
+  memory_mb: 50000
   runtime_min: 240
   # Reference genomes for host filtering in Bowtie2
   Host_refs:
@@ -113,7 +113,7 @@ host_indexing:
 host_filtering:
   # Ressources allocation
   threads: 20
-  memory_mb: 100000
+  memory_mb: 30000
   runtime_min: 600
   # Index for host filtering
   index_path: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/SOMETALP_index 
@@ -122,8 +122,8 @@ host_filtering:
 
 # Metaspade parameters
 Metaspade_assembly:
-  threads: 20
-  memory_mb: 250000
+  threads: 10
+  memory_mb: 350000
   runtime_min: 2880
 
 
@@ -136,25 +136,38 @@ MetaQuast:
 
 # Contig filtering parameters
 Contig_filter:
-  length_threshold: 1000 # this is a default of 1kb
+  length_threshold: 2500 # this is a default of 1kb
   coverage_threshold: 1
 
 ########### 03 Binning parameters #############
 
 # Bowtie2 parameters
 Contig_indexing:
-  threads: 20
-  memory_mb:
-  runtime_min:
+  threads: 8
+  memory_mb: 16000
+  runtime_min: 120
 
 Contig_Backmapping:
-  threads:
-  memory_mb:
-  runtime_min:
+  threads: 16
+  memory_mb: 20000
+  runtime_min: 4320
 
 # Metabat2 parameters
 
 Depth_calc:
-  threads:
-  memory_mb:
-  runtime_min:
+  threads: 10
+  memory_mb: 4000
+  runtime_min: 240
+
+Metabat2:
+  threads: 16
+  memory_mb: 2000
+  runtime_min: 120
+  # extra options
+  min_contig_length: 1500 # default 2500 bp for Metabat2
+
+# CheckM parameters
+CheckM:
+  threads: 16
+  memory_mb: 100000
+  runtime_min: 120

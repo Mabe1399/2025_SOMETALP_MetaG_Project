@@ -1,0 +1,7 @@
+name: binning_env
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+  - metabat2
+  - checkm-genome
