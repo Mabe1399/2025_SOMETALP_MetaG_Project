@@ -25,7 +25,7 @@ scratch_dir: /scratch/mbeckerb
 
 # path to the raw data directory containing input FASTQ files.
 
-input_dir: /nas/FAC/FBM/DBC/fmazel/gut_evol_stg/D2c/SOMETALP/2022_VD_MetaG_Project/raw_data/2024_deep_seq/rodent_metagenomes_FM/raw_files
+input_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/02_Clean_Data/
 
 # path to the log directory for storing log files.
 
@@ -161,10 +161,10 @@ Depth_calc:
 
 Metabat2:
   threads: 16
-  memory_mb: 2000
-  runtime_min: 120
+  memory_mb: 150000
+  runtime_min: 300
   # extra options
-  min_contig_length: 1500 # default 2500 bp for Metabat2
+  min_contig_length: 2500 # default 2500 bp for Metabat2
 
 # CheckM parameters
 CheckM:

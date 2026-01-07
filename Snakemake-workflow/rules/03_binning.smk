@@ -100,24 +100,15 @@ rule Contig_Backmapping:
         samtools index {output.bam}
         """
 
-# To ensure that all bam files are created I wrote a wrapper rule
-
-rule all_backmapping_bams:
-    input:
-        expand(
-            f"{SCRATCH_DIR}/Backmapping/{{contig}}/{{reads}}_mapped_to_{{contig}}_contigs.bam",
-            contig=CONTIGS,
-            reads=SAMPLES
-        )
 
 #################### 03 DEPTH CALCULATIONS ####################
 
 rule Depth_calculations:
     input:
-        bam = lambda wc: expand(
-        f"{SCRATCH_DIR}/Backmapping/{wc.contig}/{{sample}}_mapped_to_{wc.contig}_contigs.bam",
-        sample=SAMPLES
-    )
+       bam = lambda wc: expand(
+            f"{SCRATCH_DIR}/Backmapping/{wc.contig}/{{reads}}_mapped_to_{wc.contig}_contigs.bam",
+            reads=SAMPLES
+        )
     output:
         depth = f"{OUTPUT_DIR}/01_Analysis/03_Binning/Depth_Contig/{{contig}}_depth.txt"
     conda:
@@ -125,16 +116,16 @@ rule Depth_calculations:
     threads: config["Depth_calc"]["threads"]
     log:
         f"{LOG_DIR}/03_Binning/Depth/{{contig}}_depth.log"
-    benchmark:
-        f"{BENCH_DIR}/03_Binning/Depth/{{contig}}_depth.tsv"
-    resources:
-        mem_mb = config["Depth_calc"]["memory_mb"],
-        runtime = config["Depth_calc"]["runtime_min"],
-        cpus_per_task = config["Depth_calc"]["threads"]
     shell:
         """
-        jgi_summarize_bam_contig_depths --outputDepth {output.depth} {input.bam} 2> {log}
+        echo "Using BAMs:" >&2
+        printf "  %s\n" {input.bam} >&2
+
+        jgi_summarize_bam_contig_depths \
+            --outputDepth {output.depth} \
+            {input.bam} 2> {log}
         """
+
 
 #################### 04 BINNING ####################
 
@@ -163,6 +154,7 @@ rule Metabat2:
         cpus_per_task = config["Metabat2"]["threads"]
     shell:
         """
+        mkdir -p {output.dir}
         metabat2 --numThreads {threads} \
                  --inFile {input.contig} \
                  --outFile {params.basename} \
