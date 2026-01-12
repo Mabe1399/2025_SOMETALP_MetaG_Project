@@ -9,7 +9,7 @@
 # 
 # Function included:
 #           - detect_samples():
-#           - 
+#           - checkm_done_files(): # detects realised checkM analysis
 
 
 ##################################################
@@ -33,9 +33,7 @@ def detect_samples(data_dir, pattern="*"):
         for f in files:
                 base = os.path.basename(f)
 
-                base = re.sub(r'(_L\d+)?_R[12].*$', '', base)   # remove lane/read info
+                base = re.match(r'^(Pl\d+_[A-Z]\d+)_.*$', base)   # extract sample names
                 
-                base = base.split(".", 1)[0]
-                
-                samples.add(base)
+                samples.add(base.group(1))
         return sorted(samples)

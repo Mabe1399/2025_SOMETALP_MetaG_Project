@@ -44,7 +44,9 @@ BENCH_DIR = config["benchmark_dir"]
 include: "rules/00_common.smk"
 SAMPLES = detect_samples(DATA_DIR) # Function to detect samples from the data directory
 print(f"Detected samples: {SAMPLES}")
-CONTIGS = SAMPLES # For backmapping, contigs are named after samples if assembled individually
+EXCLUDE_SAMPLES = config["exclude_samples"]  # Samples to exclude from analysis
+CONTIGS = [sample for sample in SAMPLES if sample not in EXCLUDE_SAMPLES] # Filtered list of samples for Binning (list of samples creating contig files)
+print(f"Samples to be processed (after exclusion): {CONTIGS}")
 ##################################################
 # RULE ALL
 ##################################################
@@ -53,7 +55,9 @@ CONTIGS = SAMPLES # For backmapping, contigs are named after samples if assemble
 rule all:
     input:
         # Binning results for each sample
-        expand(f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{{contig}}_metabat2", contig=CONTIGS)
+        #expand(f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{{contig}}_metabat2/.done", contig=CONTIGS),
+         # multiQC report after checkM on bins
+        expand(f"{OUTPUT_DIR}/02_Results/03_Binning/CheckM_QC/multiqc_report.html")
         # final depth files for each sample
         #expand(f"{OUTPUT_DIR}/01_Analysis/03_Binning/Depth_Contig/{{contig}}_depth.txt", contig=CONTIGS),
         # Try the backmaping rule outputs

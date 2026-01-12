@@ -140,6 +140,11 @@ Contig_filter:
   coverage_threshold: 1
 
 ########### 03 Binning parameters #############
+# SAMPLE excluded from the Binning
+exclude_samples:
+- Pl1_H3
+- Pl1_H6
+- Pl1_D5
 
 # Bowtie2 parameters
 Contig_indexing:
@@ -168,6 +173,13 @@ Metabat2:
 
 # CheckM parameters
 CheckM:
-  threads: 16
-  memory_mb: 100000
-  runtime_min: 120
+  threads: 4
+  memory_mb: 128000
+  runtime_min: 240
+  # set CheckM database path if needed
+  db: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/checkM_db
+
+checkM_multiqc:
+  threads: 4
+  memory_mb: 8000
+  runtime_min: 60

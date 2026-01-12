@@ -137,8 +137,9 @@ rule Metabat2:
         ),
         depth = f"{OUTPUT_DIR}/01_Analysis/03_Binning/Depth_Contig/{{contig}}_depth.txt"
     output:
-        dir = directory(f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{{contig}}_metabat2/")
+        done = f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{{contig}}_metabat2/.done"
     params:
+        dir = lambda wc: f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{wc.contig}_metabat2",
         min_contig_length = config["Metabat2"]["min_contig_length"],
         basename = lambda wc: f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{wc.contig}_metabat2/{wc.contig}_bin"
     conda:
@@ -154,13 +155,65 @@ rule Metabat2:
         cpus_per_task = config["Metabat2"]["threads"]
     shell:
         """
-        mkdir -p {output.dir}
+        mkdir -p {params.dir}
         metabat2 --numThreads {threads} \
                  --inFile {input.contig} \
                  --outFile {params.basename} \
                  --abdFile {input.depth} \
                  --minContig {params.min_contig_length} 2> {log} 1>&2
+        touch {output.done}
         """
 
 ######################### 05 BIN QC ##################################
 
+rule CheckM_QC:
+    input:
+        dir = f"{OUTPUT_DIR}/02_Results/03_Binning/Bins/{{contig}}_metabat2/"
+    output:
+        file = f"{OUTPUT_DIR}/01_Analysis/03_Binning/CheckM_QC/{{contig}}_checkm_QC/qa_summary.tsv"
+    params:
+        outdir = lambda wc: f"{OUTPUT_DIR}/01_Analysis/03_Binning/CheckM_QC/{wc.contig}_checkm_QC",
+        db = config["CheckM"]["db"]
+    conda:
+        "../envs/Binning.yaml"
+    log:
+        f"{LOG_DIR}/03_Binning/CheckM/{{contig}}_checkm_QC.log"
+    benchmark:
+        f"{BENCH_DIR}/03_Binning/CheckM/{{contig}}_checkm_QC.tsv"
+    threads: config["CheckM"]["threads"]
+    resources:
+        mem_mb = config["CheckM"]["memory_mb"],
+        runtime = config["CheckM"]["runtime_min"],
+        cpus_per_task = config["CheckM"]["threads"]
+    shell:
+        """
+        export CheckM_DATA_PATH={params.db}
+        checkm lineage_wf {input.dir} {params.outdir} -x fa -t {threads}
+        checkm qa {params.outdir}/lineage.ms {params.outdir} -f {output.file} -t {threads} -o 1 --tab_table
+        """
+
+######################### 06 MultiQC ##################################
+
+rule CheckM_multiQC:
+    input:
+        expand(f"{OUTPUT_DIR}/01_Analysis/03_Binning/CheckM_QC/{{contig}}_checkm_QC/qa_summary.tsv", contig=CONTIGS)
+    output:
+        html = f"{OUTPUT_DIR}/02_Results/03_Binning/CheckM_QC/multiqc_report.html"
+    conda:
+        "../envs/QC_env.yaml"
+    log:
+        f"{LOG_DIR}/03_Binning/CheckM_QC/Multi_QC.log"
+    threads: config["checkM_multiqc"]["threads"]
+    resources:
+        mem_mb = config["checkM_multiqc"]["memory_mb"],
+        runtime = config["checkM_multiqc"]["runtime_min"],
+        cpus_per_task = config["checkM_multiqc"]["threads"]
+    shell:
+        """
+        mkdir -p {OUTPUT_DIR}/02_Results/03_Binning/CheckM_QC
+        multiqc {OUTPUT_DIR}/01_Analysis/03_Binning/CheckM_QC \
+            --outdir {OUTPUT_DIR}/02_Results/03_Binning/CheckM_QC \
+            --dirs \
+            --module checkm \
+            --force
+        """
