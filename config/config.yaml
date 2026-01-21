@@ -35,11 +35,20 @@ log_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/logs
 benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
 
 #########################################################
+# INCLUDE/EXCLUDE STEPS
+#########################################################
+# Set to true or false to include/exclude specific steps
+steps:
+  taxonomic_profiling: false  # Include taxonomic profiling step
+  alternative_binning: false  # Include alternative binning with MetaBAT2
+  taxonomic_classification: false  # Include MAG taxonomic classification step
+
+#########################################################
 # SOFTWARE PARAMETERS
 #########################################################
 # General parameters for all tools
 
-######## 01 Preprocessing parameters ########
+######## 01 Preprocessing.smk parameters ########
 
 # Concatenate parameters
 Concatenate:
@@ -69,9 +78,11 @@ trimmomatic:
   memory_mb: 6000
   runtime_min: 300
 
-# Kraken2 parameters
+# Kraken2 parameters (host filtering + taxonomic classification rules)
 # Database parameters
 kraken2_db:
+  DB_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/kraken2_db
+  # Ressources allocation for building the database
   threads: 32
   memory_mb: 500000
   runtime_min: 2880
@@ -118,7 +129,7 @@ host_filtering:
   # Index for host filtering
   index_path: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/bowtie2_index/SOMETALP_index 
 
-########## 02 Assembly parameters ########
+########## 02 Assembly.smk parameters ########
 
 # Metaspade parameters
 Metaspade_assembly:
@@ -136,16 +147,16 @@ MetaQuast:
 
 # Contig filtering parameters
 Contig_filter:
-  length_threshold: 2500 # this is a default of 1kb
+  length_threshold: 1500 # this is a default of 1kb
   coverage_threshold: 1
 
-########### 03 Binning parameters #############
+########### 03 Binning.smk parameters #############
 # SAMPLE excluded from the Binning
 exclude_samples:
 - Pl1_H3
 - Pl1_H6
-- Pl1_D5
 
+########### Backmapping ###################
 # Bowtie2 parameters
 Contig_indexing:
   threads: 8
@@ -154,22 +165,48 @@ Contig_indexing:
 
 Contig_Backmapping:
   threads: 16
-  memory_mb: 20000
+  memory_mb: 40000
   runtime_min: 4320
 
+######### Binning Tools Parameters #########
 # Metabat2 parameters
 
-Depth_calc:
-  threads: 10
-  memory_mb: 4000
-  runtime_min: 240
-
-Metabat2:
-  threads: 16
-  memory_mb: 150000
+MetaBat2:
+  threads: 8
+  memory_mb: 15000
   runtime_min: 300
   # extra options
-  min_contig_length: 2500 # default 2500 bp for Metabat2
+  min_contig_length: 1500 # default 2500 bp for Metabat2
+
+# Maxbin2 parameters
+MaxBin2:
+  threads: 16
+  memory_mb: 30000
+  runtime_min: 2880
+  # extra options
+  min_contig_length: 1500 # default 1000 bp for Maxbin2
+
+# CONCOCT parameters
+CONCOCT:
+  threads: 8
+  memory_mb: 15000
+  runtime_min: 2880
+  # extra options
+  min_contig_length: 1500 # default 1000 bp for CONCOCT
+  chunk_size: 10000 # default 10000 bp for CONCOCT
+  overlap_size: 0 # default 2500 bp for CONCOCT
+  coverage_runtime: 120
+
+# DASTool parameters
+DASTool:
+  threads: 8
+  memory_mb: 64000
+  runtime_min: 120
+  # extra options
+  search_engine: diamond # default is usearch, can be set to diamond
+
+
+############ QC parameters #############
 
 # CheckM parameters
 CheckM:
@@ -179,7 +216,18 @@ CheckM:
   # set CheckM database path if needed
   db: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/checkM_db
 
-checkM_multiqc:
-  threads: 4
-  memory_mb: 8000
-  runtime_min: 60
+# Bin quality filtering parameters
+Bin_filtering:
+  completeness: 90
+  contamination: 5
+
+############ 04 Taxonomic_Classification.smk parameters #############
+
+# GTDB-Tk parameters
+GTDB_Tk:
+  threads: 8
+  memory_mb: 64000
+  runtime_min: 240
+  # set GTDB-Tk database path if needed
+  db: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/GTDB_Tk/release226/
+

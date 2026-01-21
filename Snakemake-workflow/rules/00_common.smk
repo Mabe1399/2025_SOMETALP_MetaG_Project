@@ -9,7 +9,7 @@
 # 
 # Function included:
 #           - detect_samples():
-#           - checkm_done_files(): # detects realised checkM analysis
+#           
 
 
 ##################################################

@@ -189,7 +189,7 @@ rule After_multiqc:
 
 rule build_Kraken2_db:
     output:
-        db = directory("/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/kraken2_db")
+        db = directory(config["kraken2_db"]["DB_dir"])
     params:
         host_list=lambda wildcards: " ".join(config["kraken2_db"]["refseq"])
     threads: config["kraken2_db"]["threads"]
@@ -209,7 +209,7 @@ rule build_Kraken2_db:
         # Create the db folder
         mkdir -p $TMPDIR/kraken2_db
         # Build the database
-        kraken2-build --download-taxonomy --db $TMPDIR/krakeb2_db
+        kraken2-build --download-taxonomy --db $TMPDIR/kraken2_db
         kraken2-build --download-library bacteria --db $TMPDIR/kraken2_db
         kraken2-build --download-library human --db $TMPDIR/kraken2_db
         echo "Adding files: ${params.host_list}" >> {log}
@@ -229,7 +229,7 @@ rule run_kraken2:
     input:
         R1=f"{SCRATCH_DIR}/Trimmed/{{sample}}_R1_paired.fastq.gz",
         R2=f"{SCRATCH_DIR}/Trimmed/{{sample}}_R2_paired.fastq.gz",
-        db="/work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/kraken2_db"
+        db= config["kraken2_db"]["DB_dir"]
     output:
         tab=temp(f"{SCRATCH_DIR}/Kraken2/{{sample}}_kraken2.out"),
         rep=temp(f"{OUTPUT_DIR}/01_Analysis/01_QC_Preprocessing/Kraken2/{{sample}}_kraken2.report")

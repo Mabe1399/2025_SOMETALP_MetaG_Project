@@ -3,7 +3,7 @@
 # Script to combine multiple Kraken2 reports into a single report
 # Usage: python Combine_kraken_reports.py -i report1.txt report2.txt ... -o combined_report.txt
 
-# output format: taxid name rank sample1_pct sample1_reads sample2_pct sample2_reads ...
+# output format: taxid name rank sample1_pct sample1_taxa_reads sample1_clade_reads sample2_pct sample2_taxa_reads sample2_clade_reads ...
 
 # Imports
 import argparse
@@ -27,10 +27,11 @@ def parse_kraken_reports(file_path):
         )
     
     # Select relevant columns and rename them
-    df = df[['taxid', 'name', 'rank', 'pct', 'reads_taxon']]
+    df = df[['taxid', 'name', 'rank', 'pct', 'reads_taxon', 'reads_clade']]
     df = df.rename(columns={
         "pct": f'{sample_name}_pct',
-        "reads_taxon":  f'{sample_name}_reads'
+        "reads_taxon":  f'{sample_name}_taxa_reads',
+        "reads_clade": f'{sample_name}_clade_reads'
         })
     
     return df
