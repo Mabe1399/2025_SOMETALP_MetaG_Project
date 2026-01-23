@@ -61,6 +61,6 @@ rule parse_kraken2_taxonomic_report:
     log:
         f"{LOG_DIR}/02b_Taxonomic_Profiling/Kraken2/Combined_kraken2_parsing.log"
     benchmark:
-        f"{BENCH_DIR}/02b_Taxonomic_Profiling/Kraken2/Combined_kraken2_parsing.log"
+        f"{BENCH_DIR}/02b_Taxonomic_Profiling/Kraken2/Combined_kraken2_parsing.tsv"
     shell:
         "(python3 scripts/Combine_kraken_reports.py -o {output} -i {input}) 2> {log}"

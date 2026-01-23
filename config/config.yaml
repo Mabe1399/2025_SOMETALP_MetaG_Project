@@ -25,7 +25,7 @@ scratch_dir: /scratch/mbeckerb
 
 # path to the raw data directory containing input FASTQ files.
 
-input_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/02_Clean_Data/
+input_dir: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/02_Clean_Data
 
 # path to the log directory for storing log files.
 
@@ -39,9 +39,9 @@ benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
 #########################################################
 # Set to true or false to include/exclude specific steps
 steps:
-  taxonomic_profiling: false  # Include taxonomic profiling step
+  taxonomic_profiling: true  # Include taxonomic profiling step
   alternative_binning: false  # Include alternative binning with MetaBAT2
-  taxonomic_classification: false  # Include MAG taxonomic classification step
+  taxonomic_classification: true  # Include MAG taxonomic classification step
 
 #########################################################
 # SOFTWARE PARAMETERS
@@ -225,9 +225,9 @@ Bin_filtering:
 
 # GTDB-Tk parameters
 GTDB_Tk:
-  threads: 8
+  threads: 32
   memory_mb: 64000
-  runtime_min: 240
+  runtime_min: 1440
   # set GTDB-Tk database path if needed
-  db: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/shared/Database/GTDB_Tk/release226/
+  db: /work/FAC/FBM/DMF/pengel/general_data/common_databases/gtdb/release226 # GTDB-Tk database path (temporary borrowed from engel lab)
 

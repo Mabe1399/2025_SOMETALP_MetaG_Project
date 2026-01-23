@@ -243,7 +243,7 @@ rule MaxBin2:
         for f in {output.bins}/*.fasta; do
             bn=$(basename "$f" .fasta)
             id=$(echo "$bn" | awk -F. '{{printf "%d", $NF}}')
-            mv "$f" "{output.bins}/{{wc.contig}}_maxbin2.bin.${id}.fa"
+            mv "$f" "{output.bins}/{{wc.contig}}_maxbin2.bin.${{id}}.fa"
         done
 
         """
@@ -397,7 +397,7 @@ rule normalize_concoct_bins:
         mkdir -p {output.normalized}
         i=0
         for f in {input.bins}/*.fa; do
-            mv "$f" "{output.normalized}/{wildcards.contig}_concoct.bin.${i}.fa"
+            mv "$f" "{output.normalized}/{wildcards.contig}_concoct.bin.${{i}}.fa"
             i=$((i+1))
         done
         """

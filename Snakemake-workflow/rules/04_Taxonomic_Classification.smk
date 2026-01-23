@@ -18,24 +18,6 @@
 
 ########## 01 TAXONOMIC CLASSIFICATION ###########
 
-rule gtdb_db_deploy:
-    output:
-        dir= directory(config["GTDB_Tk"]["db"])
-    log:
-        f"{LOG_DIR}/04_Taxonomic_Classification/GTDB_Tk/database_deploy.log"
-    localrule: True
-    shell:
-        """
-        echo "GTDB database directory creation" >> {log}
-        mkdir -p {output.dir}
-        echo "Get Archived Database" >> {log}
-        wget https://data.ace.uq.edu.au/public/gtdb/data/releases/latest/auxillary_files/gtdbtk_package/full_package/gtdbtk_data.tar.gz
-        echo "Unarchive the DB" >> {log}
-        tar xvzf gtdbtk_data.tar.gz
-        echo "Database deployed and ready to use" >> {log}
-        """
-
-
 rule gtdb_classify:
     input:
         db= config["GTDB_Tk"]["db"],
@@ -49,7 +31,10 @@ rule gtdb_classify:
     conda:
         "../envs/Taxonomy.yaml"
     threads: config["GTDB_Tk"]["threads"]
-    ressources:
+    params:
+        tmp = f"{SCRATCH_DIR}/gtdbtk_classify/",
+        scratch = f"{SCRATCH_DIR}/gtdbtk_classify_test_pplacer"
+    resources:
         mem_mb= config["GTDB_Tk"]["memory_mb"],
         cpus_per_task= config["GTDB_Tk"]["threads"],
         runtime= config["GTDB_Tk"]["runtime_min"]
@@ -58,9 +43,15 @@ rule gtdb_classify:
         export GTDBTK_DATA_PATH={input.db}
         echo "GTDB_Tk DB is in: $GTDBTK_DATA_PATH" >> {log}
 
+        mkdir -p {params.tmp}
+        
         gtdbtk classify_wf --genome_dir {input.filtered_mags} \
-        --skip_ani_screen \
         --extension fa \
+        --tmpdir {params.tmp} \
+        --pplacer_cpus 4 \
+        --scratch_dir {params.scratch} \
         --out_dir {output.classified_out} \
         --cpus {threads} 2> {log} 1>&2
         """
+
+
