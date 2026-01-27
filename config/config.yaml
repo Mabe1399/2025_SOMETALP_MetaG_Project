@@ -231,3 +231,21 @@ GTDB_Tk:
   # set GTDB-Tk database path if needed
   db: /work/FAC/FBM/DMF/pengel/general_data/common_databases/gtdb/release226 # GTDB-Tk database path (temporary borrowed from engel lab)
 
+# DATA VARIABLES AND COLORS FOR ITOL VISUALIZATIONS
+DATA_VARIABLES:
+  metadata_path: /work/FAC/FBM/DBC/fmazel/gut_evol_stg/mbeckerb/2025_SOMETALP_MetaG_Project/00_Data/00_Metadata/Metadata_SOMETALP_MetaG_2022_FMazel_Geo.xlsx # Path to metadata file
+  col_host: "Species_ID_final" # Column name in metadata file for host species
+  split_criteria: "_DASTool_" # Character to split user_genome to extract Sample_ID
+  col_sample_id: "Fastq_Sample_ID" # Column name in metadata file for sample IDs
+
+# Colors for host species in iTOL visualizations
+host_colors:
+  Sorex_araneus: "#8da9c4"
+  Sorex_coronatus: "#13315c"
+  Apodemus_flavicollis: "#99582a"
+  Apodemus_sylvaticus: "#432818"
+  Apodemus_alpicola: "#ffe6a7"
+  Microtus_lavernedii: "#386641"
+  Myodes_glareolus: "#6a994e"
+  Arvicola_amphibius: "#a7c957"
+  Chionomys_nivalis: "#f2e8cf"

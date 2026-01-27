@@ -9,7 +9,7 @@
 
 # Steps included:
 # 01: Taxonomic Classification (GTDB-Tk)
-# 02: 
+# 02: iTOL Parsing
 
 
 ##################################################
@@ -54,4 +54,50 @@ rule gtdb_classify:
         --cpus {threads} 2> {log} 1>&2
         """
 
+################ 02 iTOL PARSING #########################
 
+rule convert_to_iTOL:
+    input:
+        db = config["GTDB_Tk"]["db"],
+        dir = f"{OUTPUT_DIR}/01_Analysis/04_Taxonomic_Classification/gtdb_classify/",
+        tree = f"{OUTPUT_DIR}/01_Analysis/04_Taxonomic_Classification/gtdb_classify/classify/gtdbtk.bac120.classify.tree.{{cls}}.tree"
+    output:
+        iTOL = f"{OUTPUT_DIR}/02_Results/04_Taxonomic_Classification/iTOL_visualisation/gtdbtk.bac120.iTOL.{{cls}}.tree"
+    log:
+        f"{LOG_DIR}/04_Taxonomic_Classification/iTOL_visualisation/iTOL_tree_{{cls}}_formating.log"
+    conda:
+        "../envs/Taxonomy.yaml"
+    threads: 1
+    localrule: True
+    shell:
+        """
+        # Still need the DB
+        export GTDBTK_DATA_PATH={input.db}
+        echo "GTDB_Tk DB is in: $GTDBTK_DATA_PATH" >> {log}
+
+        # Reformat the tree to be usable in iTOL
+        gtdbtk convert_to_itol --input_tree {input.tree} --output_tree {output.iTOL} 2> {log} 1>&2
+        
+        """
+
+rule parse_gtdbtk_summary_to_iTOL:
+    input:
+        gtdb_summary = f"{OUTPUT_DIR}/01_Analysis/04_Taxonomic_Classification/gtdb_classify/classify/gtdbtk.bac120.summary.tsv"
+    output:
+        dir = directory(f"{OUTPUT_DIR}/02_Results/04_Taxonomic_Classification/iTOL_visualisation/Annotation_files")
+    params:
+        metadata= config["DATA_VARIABLES"]["metadata_path"],
+        config= "../config/config.yaml"
+    log:
+        f"{LOG_DIR}/04_Taxonomic_Classification/iTOL_visualisation/iTOL_Annotation_files.log"
+    conda:
+        "../envs/Parsing.yaml"
+    threads: 1
+    localrule: True
+    shell:
+        """
+        python3 scripts/parse_gtdbtk_to_itol.py --metadata {params.metadata} \
+        --summary {input.gtdb_summary} \
+        --config {params.config} \
+        --outdir {output.dir} 2> {log} 1>&2
+        """
