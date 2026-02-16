@@ -41,7 +41,8 @@ benchmark_dir: /users/mbeckerb/Projects/2025_SOMETALP_MetaG_Project/benchmark
 steps:
   taxonomic_profiling: true  # Include taxonomic profiling step
   alternative_binning: false  # Include alternative binning with MetaBAT2
-  taxonomic_classification: true  # Include MAG taxonomic classification step
+  MAGs_Reporting_step: true # Include MAGs reporting step
+  
 
 #########################################################
 # SOFTWARE PARAMETERS
@@ -221,7 +222,7 @@ Bin_filtering:
   completeness: 90
   contamination: 5
 
-############ 04 Taxonomic_Classification.smk parameters #############
+############ 04 MAGs parameters #############
 
 # GTDB-Tk parameters
 GTDB_Tk:
@@ -249,3 +250,14 @@ host_colors:
   Myodes_glareolus: "#6a994e"
   Arvicola_amphibius: "#a7c957"
   Chionomys_nivalis: "#f2e8cf"
+
+
+# dRep parameters
+dRep:
+  threads: 16
+  memory_mb: 64000
+  runtime_min: 1440
+  # extra options
+  completeness_threshold: 90 # default 50% for dRep
+  contamination_threshold: 5 # default 10% for dRep
+  secondary_clustering_ANI: 0.95 # default 95% for dRep secondary clustering

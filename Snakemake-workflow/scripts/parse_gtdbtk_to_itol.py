@@ -141,10 +141,8 @@ with open(strip_labels_file, "w") as f:
 ## Create the iTOL leaf labels file
 leaf_labels_file = Path(args.outdir) / "leaf_genus_gtdb_to_iTOL_labels.txt"
 with open(leaf_labels_file, "w") as f:
-    f.write("DATASET_LABELS\n")
+    f.write("LABELS\n")
     f.write("SEPARATOR TAB\n")
-    f.write("DATASET_LABEL\tLeaf_Genus_Labels\n")
-    f.write("COLOR\t#000000\n")
     f.write("DATA\n")
     for leaf_id, label in leaf_id_to_label.items():
         f.write(f"{leaf_id}\t{label}\n")
