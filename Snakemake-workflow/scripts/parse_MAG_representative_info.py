@@ -34,16 +34,18 @@ gtdbtk_summary = pd.read_csv(args.GTDB_Tk_summary, sep="\t", na_values="N/A")
 genome_info = checkm_summary[["Bin Id", "Completeness", "Contamination", "# markers" ]]
 genome_info.columns = ["MAG ID", "completeness", "contamination", "# markers"]
 # Add .fasta extension to genome ID
-genome_info["MAG ID"] = genome_info["MAG ID"].apply(lambda x: x + ".fa")
+genome_info.loc[:, "MAG ID"] = genome_info["MAG ID"].apply(lambda x: x + ".fa")
 
 # EXTRACT TAXONOMY INFO FROM GTDB-Tk SUMMARY
 ## Extract genome ID and taxonomy
 taxonomy_info = gtdbtk_summary[["user_genome", "classification"]]
 taxonomy_info.columns = ["MAG ID", "taxonomy"]
 # Add .fasta extension to genome ID
-taxonomy_info["MAG ID"] = taxonomy_info["MAG ID"].apply(lambda x: x + ".fa")
+taxonomy_info.loc[:, "MAG ID"] = taxonomy_info["MAG ID"].apply(lambda x: x + ".fa")
 # widen taxonomy column to separate different taxonomic ranks
-taxonomy_info[["domain", "phylum", "class", "order", "family", "genus", "species"]] = taxonomy_info["taxonomy"].str.split(";", expand=True)
+taxonomy_info[["Domain", "Phylum", "Class", "Order", "Family", "Genus", "Species"]] = taxonomy_info["taxonomy"].str.split(";", expand=True)
+# drop original taxonomy column
+taxonomy_info = taxonomy_info.drop(columns=["taxonomy"])
 
 # EXTRACT dRep CLUSTER INFO FROM dRep DIRECTORY
 ## Extract info from data_tables directory
@@ -51,20 +53,20 @@ taxonomy_info[["domain", "phylum", "class", "order", "family", "genus", "species
 drep_data_tables_dir = os.path.join(args.drep_dir, "data_tables")
 sdb_file = os.path.join(drep_data_tables_dir, "Sdb.csv")
 sdb_df = pd.read_csv(sdb_file)
-drep_cluster_info = sdb_df[["genome", "Score"]
+drep_cluster_info = sdb_df[["genome", "score"]]
 drep_cluster_info.columns = ["MAG ID", "dRep_Score"]
 
 ## Extract cluster info from Cdb.csv file
 cdb_file = os.path.join(drep_data_tables_dir, "Cdb.csv")
 cdb_df = pd.read_csv(cdb_file)
-drep_cluster_info_cdb = cdb_df[["representative_genome", "cluster"]]
+drep_cluster_info_cdb = cdb_df[["genome", "secondary_cluster"]]
 drep_cluster_info_cdb.columns = ["MAG ID", "dRep_cluster"]
 
 ## Extract genome size, N50, closest cluster member, furthest cluster member from Widb.csv file
 widb_file = os.path.join(drep_data_tables_dir, "Widb.csv")
 widb_df = pd.read_csv(widb_file)
-drep_cluster_info_widb = widb_df[["genome", "size", "N50", "closest_cluster_member", "furthest_cluster_member"]]
-drep_cluster_info_widb.columns = ["MAG ID", "Genome size (bp)", "N50", "closest_cluster_member", "furthest_cluster_member"]
+drep_cluster_info_widb = widb_df[["genome","closest_cluster_member", "furthest_cluster_member"]]
+drep_cluster_info_widb.columns = ["MAG ID","closest_cluster_member", "furthest_cluster_member"]
 
 # MERGE ALL DATAFRAMES if info NoT available for a MAG, fill with NA
 ## Merge genome_info with taxonomy_info

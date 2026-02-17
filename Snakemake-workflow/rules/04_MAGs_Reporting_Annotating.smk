@@ -164,3 +164,24 @@ rule run_dRep:
 
 ########################## 04 REPORTING SUMMARY ##############################
 
+rule MAG_Representative_info:
+    input:
+        CheckM= f"{OUTPUT_DIR}/02_Results/03_Binning/CheckM_QC/filtered_MAGs_stats.tsv",
+        GTDB_Tk= f"{OUTPUT_DIR}/01_Analysis/04_Taxonomic_Classification/gtdb_classify/classify/gtdbtk.bac120.summary.tsv",
+        dRep= f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/reference_SGBs/"
+    output:
+        Summary= f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/MAG_Representative_info_parsed.tsv"
+    conda:
+        "../envs/Parsing.yaml"
+    log:
+        f"{LOG_DIR}/04_MAGs_Reporting_Annotating/MAG_Representative_info.log"
+    threads: 1
+    localrule: True
+    shell:
+        """
+        python3 scripts/parse_MAG_representative_info.py \
+        --CheckM_summary {input.CheckM} \
+        --GTDB_Tk_summary {input.GTDB_Tk} \
+        --drep_dir {input.dRep} \
+        --output {output.Summary} 2> {log} 1>&2
+        """
