@@ -9,9 +9,10 @@
 
 # Steps included:
 # 01: Taxonomic Classification (GTDB-Tk)
-# 02: iTOL Parsing
-# 03: Dereplication (dRep)
-# 04: Reporting Summary
+# 02: MAGs Tree inference (GTDB-Tk)
+# 03: iTOL Parsing
+# 04: Dereplication (dRep)
+# 05: Reporting Summary
 
 
 ##################################################
@@ -56,17 +57,68 @@ rule gtdb_classify:
         --cpus {threads} 2> {log} 1>&2
         """
 
-################ 02 iTOL PARSING #########################
+################ 02 MAGs TREE INFERENCE ###################
+
+rule gtdb_infer:
+    input:
+        msa = f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/gtdbtk.bac120.user_msa.fasta.gz",
+        db= config["GTDB_Tk"]["db"]
+    output:
+        out_dir = directory(f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/bac120_infer_tree")
+    log:
+        f"{LOG_DIR}/04_MAGs_Reporting_Annotating/GTDB_Tk/GTDB_infer.log"
+    benchmark:
+        f"{BENCH_DIR}/04_MAGs_Reporting_Annotating/GTDB_Tk/GTDB_infer.tsv"
+    conda:
+        "../envs/Reporting.yaml"
+    threads: config["GTDB_Tk"]["threads"]
+    resources:
+        mem_mb= config["GTDB_Tk"]["memory_mb"],
+        cpus_per_task= config["GTDB_Tk"]["threads"],
+        runtime= config["GTDB_Tk"]["runtime_min"]
+    shell:
+        """
+        export GTDBTK_DATA_PATH={input.db}
+        echo "GTDB_Tk DB is in: $GTDBTK_DATA_PATH" >> {log}
+
+        gtdbtk infer --msa_file {input.msa} \
+        --cpus {threads} \
+        --out_dir {output.out_dir} 2> {log} 1>&2
+        """
+
+rule gtdb_decorate:
+    input:
+        tree_dir= f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/bac120_infer_tree",
+        gtdb_classify= f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/classify/gtdbtk.bac120.summary.tsv",
+        db= config["GTDB_Tk"]["db"]
+    output:
+        tree= f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/bac120_decorate_tree/gtdbtk.unrooted.decorated.tree"
+    log:
+        f"{LOG_DIR}/04_MAGs_Reporting_Annotating/GTDB_Tk/GTDB_decorate.log"
+    conda:
+        "../envs/Reporting.yaml"
+    threads: 1
+    localrule: True
+    shell:
+        """
+        export GTDBTK_DATA_PATH={input.db}
+        echo "GTDB_Tk DB is in: $GTDBTK_DATA_PATH" >> {log}
+
+        gtdbtk decorate --input_tree {input.tree_dir}/gtdbtk.unrooted.tree \
+        --output_tree {output.tree} \
+        --gtdbtk_classification_file {input.gtdb_classify} 2> {log} 1>&2
+        """
+
+################ 03 iTOL PARSING #########################
 
 rule convert_to_iTOL:
     input:
         db = config["GTDB_Tk"]["db"],
-        dir = f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/",
-        tree = f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/classify/gtdbtk.bac120.classify.tree.{{cls}}.tree"
+        tree = f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/bac120_decorate_tree/gtdbtk.unrooted.decorated.tree"
     output:
-        iTOL = f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/iTOL_visualisation/gtdbtk.bac120.iTOL.{{cls}}.tree"
+        iTOL = f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/iTOL_visualisation/gtdbtk.bac120.iTOL.MAGs.tree"
     log:
-        f"{LOG_DIR}/04_MAGs_Reporting_Annotating/iTOL_visualisation/iTOL_tree_{{cls}}_formating.log"
+        f"{LOG_DIR}/04_MAGs_Reporting_Annotating/iTOL_visualisation/iTOL_tree_formating.log"
     conda:
         "../envs/Reporting.yaml"
     threads: 1
@@ -79,7 +131,6 @@ rule convert_to_iTOL:
 
         # Reformat the tree to be usable in iTOL
         gtdbtk convert_to_itol --input_tree {input.tree} --output_tree {output.iTOL} 2> {log} 1>&2
-        
         """
 
 
@@ -105,7 +156,7 @@ rule parse_gtdbtk_summary_to_iTOL:
         --outdir {output.dir} 2> {log} 1>&2
         """
 
-#################### 03 DEREPLICATION #############################
+#################### 04 DEREPLICATION #############################
 
 rule parse_dRep_genomeInfo:
     input:
@@ -162,7 +213,7 @@ rule run_dRep:
             -d 2> {log} 1>&2
         """
 
-########################## 04 REPORTING SUMMARY ##############################
+########################## 05 REPORTING SUMMARY ##############################
 
 rule MAG_Representative_info:
     input:
