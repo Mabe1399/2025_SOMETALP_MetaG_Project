@@ -42,7 +42,7 @@ steps:
   taxonomic_profiling: true  # Include taxonomic profiling step
   alternative_binning: false  # Include alternative binning with MetaBAT2
   MAGs_Reporting_step: true # Include MAGs reporting step
-  
+  Instrain_analysis: true # Include InStrain analysis step
 
 #########################################################
 # SOFTWARE PARAMETERS
@@ -261,3 +261,21 @@ dRep:
   completeness_threshold: 90 # default 50% for dRep
   contamination_threshold: 5 # default 10% for dRep
   secondary_clustering_ANI: 0.95 # default 95% for dRep secondary clustering
+
+############ 05a Instrain_Analysis.smk parameters #############
+# Bowtie2 parameters for InStrain analysis
+SGBs_indexing:
+  threads: 8
+  memory_mb: 16000
+  runtime_min: 120
+
+SGBs_mapping:
+  threads: 16
+  memory_mb: 40000
+  runtime_min: 4320
+
+# InStrain parameters
+InStrain:
+  threads: 8
+  memory_mb: 64000
+  runtime_min: 1440

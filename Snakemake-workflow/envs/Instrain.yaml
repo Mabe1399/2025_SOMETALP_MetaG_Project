@@ -1,0 +1,9 @@
+name: Instrain_env
+channels:
+ - bioconda
+ - conda-forge
+dependencies:
+ - instrain
+ - prodigal
+ - coverm
+ - samtools
