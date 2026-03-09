@@ -277,5 +277,5 @@ SGBs_mapping:
 # InStrain parameters
 InStrain:
   threads: 8
-  memory_mb: 64000
+  memory_mb: 250000
   runtime_min: 1440

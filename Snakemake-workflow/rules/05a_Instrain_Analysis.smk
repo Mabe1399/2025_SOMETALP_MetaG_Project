@@ -206,3 +206,25 @@ rule Sample_Compare_instrain:
         -o {output.compare} \
         --database_mode 2> {log} 1>&2
         """
+
+rule parse_Instrain_output:
+    input:
+        Instrain_dir= expand(f"{OUTPUT_DIR}/02_Results/05a_Instrain_Analysis/Instrain_profile/{{reads}}_mapped_to_SGBs_representatives.IS", reads= CONTIGS),
+        stb = f"{OUTPUT_DIR}/01_Analysis/05a_Instrain_Analysis/SGBs_representatives_genomes.stb",
+        dRep = f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/MAG_Representative_info_parsed.tsv"
+    output:
+        out = directory(f"{OUTPUT_DIR}/02_Results/05a_Instrain_Analysis/Instrain_profile/Parsed")
+    log:
+        f"{LOG_DIR}/05a_Instrain_Analysis/Instrain_profile/parse_Instrain_profile.log"
+    conda:
+        "../envs/Parsing.yaml"
+    threads: 1
+    localrule: True
+    shell:
+        """
+        python3 scripts/parse_Instrain_profile.py --instrain_output {input.Instrain_dir} \
+        --MAG_representative_info {input.dRep} \
+        --stb {input.stb} \
+        --output_dir {output.out} 2> {log} 1>&2
+        """
+
