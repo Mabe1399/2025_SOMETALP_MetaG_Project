@@ -37,7 +37,7 @@ def extract_file_list(instrain_output_dir_list):
     mapping_info_files = []
 
     # extract the sample name from the directory name and use it to identify the corresponding files
-    sample_names = [os.path.basename(dir).split('_mapping_')[0] for dir in instrain_output_dir_list]
+    sample_names = [os.path.basename(dir).split('_mapped_')[0] for dir in instrain_output_dir_list]
 
     # extract the files prefix from dir list and use it to identify the corresponding files
     file_prefixes = [os.path.basename(dir) for dir in instrain_output_dir_list]
