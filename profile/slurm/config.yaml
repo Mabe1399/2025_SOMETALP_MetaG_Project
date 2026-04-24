@@ -1,0 +1,29 @@
+# CONFIGURATION FILE FOR SNAKEMAKE WITH SLURM
+# This file contains default settings for running Snakemake workflows on a SLURM cluster.
+# You can customize these settings according to your cluster's configuration and your workflow requirements.
+executor: slurm
+
+# How many jobs to run in parallel
+jobs: 100
+
+# Default resources for jobs
+default-resources:
+  slurm_partition: cpu  # Default SLURM partition
+  slurm_account:   # Default SLURM account (leave empty if not needed)
+  slurm_extra: "--mail-type=ALL --mail-user= #Email" # Extra SLURM options
+  mem_mb: 4000        # Default memory per job in megabytes
+  runtime: 60        # Default time limit per job in minutes
+  cpus_per_task: 1   # Default number of CPUs per task
+
+# Snakemake checkpointing settings
+max-status-checks-per-second: 10
+restart-times: 0
+latency-wait: 60
+
+# Basic snakemake settings
+# by default, use conda environments if available
+use-conda: true
+conda-prefix: /this/is/the/path/to/conda/environments # path to conda environments
+
+# by default, get extra benchmarking information
+benchmark-extended: true
