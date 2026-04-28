@@ -3,11 +3,13 @@
 ![+ Flowchart-1](https://github.com/user-attachments/files/27168850/SOMETALP_MetaG_Public_Workflow.pdf)
 
 
+
 ## Snakemake workflow to get MAGs out of Metagenomic data from multiple hosts
 
 Still under development
 
 ### Install 
+
 
 **SOURCE INSTALL**
 
@@ -24,8 +26,10 @@ Note: This workflow assumes paired-end multi lane metagenomic data for now
 Utilisation is designed to be run locally or in an HPC by following these steps:
 
 1. Fill the profile (local or slurm) file for HPC purposes (designed for slurm scheduler)
+
    
 2. Fill the Config.yaml file for directory specificity and specific tool parameters.
+
 
 3. Run the snakemake workflow
 
