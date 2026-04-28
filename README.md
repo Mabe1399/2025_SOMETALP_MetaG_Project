@@ -1,6 +1,9 @@
 # SOMETALP Metagenomic Pipeline
 
-## Snakemake workflow to get MAGs out of Metagenomice data from multiple hosts
+[SOMETALP_MetaG_Public_Workflow.pdf](https://github.com/user-attachments/files/27168850/SOMETALP_MetaG_Public_Workflow.pdf)
+
+
+## Snakemake workflow to get MAGs out of Metagenomic data from multiple hosts
 
 Still under development
 
