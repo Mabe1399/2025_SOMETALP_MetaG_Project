@@ -262,7 +262,7 @@ dRep:
   contamination_threshold: 5 # default 10% for dRep
   secondary_clustering_ANI: 0.95 # default 95% for dRep secondary clustering
 
-############ 05a Instrain_Analysis.smk parameters #############
+############ 05a_Instrain_Analysis.smk parameters #############
 # Bowtie2 parameters for InStrain analysis
 SGBs_indexing:
   threads: 8
@@ -279,3 +279,18 @@ InStrain:
   threads: 8
   memory_mb: 250000
   runtime_min: 1440
+
+
+############### 05b_Co-diversification.smk parameters #############
+# Iqtree parameters for phylogenetic tree construction
+Phylo_iqtree:
+  threads: 16
+  memory_mb: 64000
+  runtime_min: 1440
+
+# Co-diversification analysis parameters
+Co_diversification:
+  threads: 4
+  memory_mb: 16000
+  runtime_min: 120
+

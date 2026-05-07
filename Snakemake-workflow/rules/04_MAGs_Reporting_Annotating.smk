@@ -26,7 +26,9 @@ rule gtdb_classify:
         db= config["GTDB_Tk"]["db"],
         filtered_mags= f"{OUTPUT_DIR}/02_Results/03_Binning/HighQC_Bins/"
     output:
-        classified_out= directory(f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/")
+        classified_out= directory(f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/"),
+        GTDB_Tk= f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/classify/gtdbtk.bac120.summary.tsv",
+        msa = f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/gtdbtk.bac120.user_msa.fasta.gz"
     log:
         f"{LOG_DIR}/04_MAGs_Reporting_Annotating/GTDB_Tk/GTDB_classify.log"
     benchmark:
@@ -54,7 +56,7 @@ rule gtdb_classify:
         --pplacer_cpus 4 \
         --scratch_dir {params.scratch} \
         --out_dir {output.classified_out} \
-        --cpus {threads} 2> {log} 1>&2
+        --cpus {threads} > {log} 2>&1
         """
 
 ################ 02 MAGs TREE INFERENCE ###################
@@ -218,7 +220,7 @@ rule run_dRep:
 rule MAG_Representative_info:
     input:
         CheckM= f"{OUTPUT_DIR}/02_Results/03_Binning/CheckM_QC/filtered_MAGs_stats.tsv",
-        GTDB_Tk= f"{OUTPUT_DIR}/01_Analysis/04_Taxonomic_Classification/gtdb_classify/classify/gtdbtk.bac120.summary.tsv",
+        GTDB_Tk= f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/classify/gtdbtk.bac120.summary.tsv",
         dRep= f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/reference_SGBs/"
     output:
         Summary= f"{OUTPUT_DIR}/02_Results/04_MAGs_Reporting_Annotating/MAG_Representative_info_parsed.tsv"
