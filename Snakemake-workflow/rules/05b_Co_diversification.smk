@@ -33,11 +33,11 @@ rule Mags_GTDBtk_identify:
         f"{BENCH_DIR}/05b_Co_diversification/Mags_GTDBtk_identify/Mags_GTDBtk_identify.tsv"
     conda:
         "../envs/Reporting.yaml"
-    threads: config["GTDB_tk"]["threads"]
-    ressources:
-        mem_mb = config["GTDB_tk"]["memory_mb"],
-        runtime = config["GTDB_tk"]["runtime_min"],
-        cpus_per_task = config["GTDB_tk"]["threads"]
+    threads: config["GTDB_Tk"]["threads"]
+    resources:
+        mem_mb = config["GTDB_Tk"]["memory_mb"],
+        runtime = config["GTDB_Tk"]["runtime_min"],
+        cpus_per_task = config["GTDB_Tk"]["threads"]
     shell:
         """
         export GTDBTK_DATA_PATH={input.db}
@@ -54,7 +54,7 @@ rule Mags_GTDBtk_identify:
 rule Mags_GTDBtk_align:
     input:
         db= config["GTDB_Tk"]["db"],
-        identify= directory(f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_identify/")
+        identify= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_identify/"
     output: 
         out= directory(f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/"),
         msa= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/HighQC_MAGs.bac120.user_msa.fasta.gz"
@@ -64,11 +64,11 @@ rule Mags_GTDBtk_align:
         f"{BENCH_DIR}/05b_Co_diversification/Mags_GTDBtk_align/Mags_GTDBtk_align.tsv"
     conda:
         "../envs/Reporting.yaml"
-    threads: config["GTDB_tk"]["threads"]
-    ressources:
-        mem_mb = config["GTDB_tk"]["memory_mb"],
-        runtime = config["GTDB_tk"]["runtime_min"],
-        cpus_per_task = config["GTDB_tk"]["threads"]
+    threads: config["GTDB_Tk"]["threads"]
+    resources:
+        mem_mb = config["GTDB_Tk"]["memory_mb"],
+        runtime = config["GTDB_Tk"]["runtime_min"],
+        cpus_per_task = config["GTDB_Tk"]["threads"]
     shell:
         """
         export GTDBTK_DATA_PATH={input.db}
@@ -85,7 +85,7 @@ rule Mags_GTDBtk_align:
 
 rule iqtree_phylo_infer:
     input:
-        msa= f"{OUTPUT_DIR}/01_Analysis/04_MAGs_Reporting_Annotating/gtdb_classify/align/HighQC_MAGs.bac120.user_msa.fasta.gz"
+        msa= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/HighQC_MAGs.bac120.user_msa.fasta.gz"
     output:
         tree= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/iqtree/HighQC_MAGs.bac120.user_msa.treefile"
     log:
@@ -95,16 +95,16 @@ rule iqtree_phylo_infer:
     conda:
         "../envs/Phylogeny.yaml"
     threads: config["Phylo_iqtree"]["threads"]
-    ressources:
+    resources:
         mem_mb = config["Phylo_iqtree"]["memory_mb"],
         runtime = config["Phylo_iqtree"]["runtime_min"],
         cpus_per_task = config["Phylo_iqtree"]["threads"]
     shell:
         """
-        outdir= $(dirname {output.tree})
+        outdir=$(dirname {output.tree})
 
         iqtree -s {input.msa} \
-        --prefix ${{outfile}}/HighQC_MAGs.bac120.user_msa \
+        --prefix ${{outdir}}/HighQC_MAGs.bac120.user_msa \
         -B 1000 \
         -nt {threads} \
         -T {threads} > {log} 2>&1

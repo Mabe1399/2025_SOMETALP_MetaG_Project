@@ -43,6 +43,7 @@ steps:
   alternative_binning: false  # Include alternative binning with MetaBAT2
   MAGs_Reporting_step: true # Include MAGs reporting step
   Instrain_analysis: true # Include InStrain analysis step
+  Co_diversification_analysis: true # Include Co-diversification analysis step
 
 #########################################################
 # SOFTWARE PARAMETERS
