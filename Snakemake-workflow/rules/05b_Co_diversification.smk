@@ -45,6 +45,7 @@ rule Mags_GTDBtk_identify:
 
         gtdbtk identify --genome_dir {input.Mag} \
             --out_dir {output.out} \
+            --extension fa \
             --prefix HighQC_MAGs \
             --cpus {threads} > {log} 2>&1
         """
