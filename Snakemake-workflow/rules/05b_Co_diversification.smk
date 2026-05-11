@@ -58,7 +58,7 @@ rule Mags_GTDBtk_align:
         identify= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_identify/"
     output: 
         out= directory(f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/"),
-        msa= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/HighQC_MAGs.bac120.user_msa.fasta.gz"
+        msa= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/align/HighQC_MAGs.bac120.user_msa.fasta.gz"
     log:
         f"{LOG_DIR}/05b_Co_diversification/Mags_GTDBtk_align/Mags_GTDBtk_align.log"
     benchmark:
@@ -86,7 +86,7 @@ rule Mags_GTDBtk_align:
 
 rule iqtree_phylo_infer:
     input:
-        msa= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/HighQC_MAGs.bac120.user_msa.fasta.gz"
+        msa= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/gtdb_align/align/HighQC_MAGs.bac120.user_msa.fasta.gz"
     output:
         tree= f"{OUTPUT_DIR}/01_Analysis/05b_Co_diversification/iqtree/HighQC_MAGs.bac120.user_msa.treefile"
     log:
