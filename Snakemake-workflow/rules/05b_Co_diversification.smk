@@ -105,6 +105,7 @@ rule iqtree_phylo_infer:
         outdir=$(dirname {output.tree})
 
         iqtree -s {input.msa} \
+        -m WAG+G \
         --prefix ${{outdir}}/HighQC_MAGs.bac120.user_msa \
         -B 1000 \
         -nt {threads} \
