@@ -2,6 +2,7 @@
 
 # Ignored files
 Snakemake-workflow/slurm
+.DS_Store
 
 # ignored directories
 logs/
